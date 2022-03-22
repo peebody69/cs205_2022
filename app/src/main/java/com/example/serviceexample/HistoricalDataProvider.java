@@ -24,6 +24,7 @@ public class HistoricalDataProvider extends ContentProvider {
     static final Uri CONTENT_URI = Uri.parse(URL);
 
     static final String ID = "id";
+    static final String STOCKNAME = "stockName";
     static final String CLOSE = "close";
     static final String VOLUME = "volume";
 
@@ -52,7 +53,7 @@ public class HistoricalDataProvider extends ContentProvider {
                     " id INTEGER NOT NULL, " +
                     " close DECIMAL(5,3) NOT NULL, " +
                     " volume DECIMAL(10,1) NOT NULL, " +
-                    "PRIMARY KEY (stocName, id));";
+                    "PRIMARY KEY (stockName, id));";
 
 
     // helper class creates repo

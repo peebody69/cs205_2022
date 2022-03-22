@@ -109,6 +109,7 @@ public class MyService extends Service{
                     Log.v("data", i + ":, c: " + close + " v: " + volume);
 
                     ContentValues values = new ContentValues();
+                    values.put(HistoricalDataProvider.STOCKNAME, ticker);
                     values.put(HistoricalDataProvider.CLOSE, close);
                     values.put(HistoricalDataProvider.VOLUME, volume);
                     getContentResolver().insert(HistoricalDataProvider.CONTENT_URI, values);
