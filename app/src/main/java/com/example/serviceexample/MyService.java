@@ -35,7 +35,7 @@ public class MyService extends Service{
     private static final int CONNECTION_TIMEOUT = 15000;
 
     private String ticker = "MSFT";
-    private String token =""; // put your own token
+    private String token = BuildConfig.API_KEY; // put your own token
 
     private final class ServiceHandler extends Handler{
         public ServiceHandler(Looper looper){
