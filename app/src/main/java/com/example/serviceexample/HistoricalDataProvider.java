@@ -48,9 +48,11 @@ public class HistoricalDataProvider extends ContentProvider {
     static final int DATABASE_VERSION = 1;
     static final String CREATE_DB_TABLE =
             " CREATE TABLE " + TABLE_NAME +
-                    " (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    " (stockName VARCHAR(30)," +
+                    " id INTEGER NOT NULL, " +
                     " close DECIMAL(5,3) NOT NULL, " +
-                    " volume DECIMAL(10,1) NOT NULL);";
+                    " volume DECIMAL(10,1) NOT NULL, " +
+                    "PRIMARY KEY (stocName, id));";
 
 
     // helper class creates repo
