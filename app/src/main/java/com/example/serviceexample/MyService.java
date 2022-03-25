@@ -110,6 +110,7 @@ public class MyService extends Service{
 
                     ContentValues values = new ContentValues();
                     values.put(HistoricalDataProvider.STOCKNAME, ticker);
+                    values.put(HistoricalDataProvider.ID, i);
                     values.put(HistoricalDataProvider.CLOSE, close);
                     values.put(HistoricalDataProvider.VOLUME, volume);
                     getContentResolver().insert(HistoricalDataProvider.CONTENT_URI, values);
