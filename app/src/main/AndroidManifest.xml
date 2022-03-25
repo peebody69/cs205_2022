@@ -25,6 +25,9 @@
         <service
             android:name=".MyService" >
         </service>
+        <service
+            android:name=".PerformanceService">
+        </service>
         <provider
             android:name=".HistoricalDataProvider"
             android:authorities="com.example.serviceexample.HistoricalDataProvider"

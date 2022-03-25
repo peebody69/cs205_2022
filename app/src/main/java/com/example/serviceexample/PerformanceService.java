@@ -43,7 +43,6 @@ public class PerformanceService extends Service {
             String[] columnNames = new String[1];
             columnNames[0] = "distinct stockName";
             Cursor cursor = getContentResolver().query(CONTENT_URI, columnNames,null, null, null);
-            Log.d("STONKS", columnNames[0]);
             if(cursor.moveToFirst()){
                 while(!cursor.isAfterLast()) {
                     String stockName = cursor.getString(cursor.getColumnIndexOrThrow("stockName"));
