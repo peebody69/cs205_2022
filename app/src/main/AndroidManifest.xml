@@ -37,6 +37,9 @@
             <intent-filter>
                 <action android:name="DOWNLOAD_COMPLETE"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="PERFORMANCE_CALCULATED"></action>
+            </intent-filter>
         </receiver>
 
     </application>
