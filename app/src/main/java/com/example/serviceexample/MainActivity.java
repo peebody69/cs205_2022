@@ -1,5 +1,6 @@
 package com.example.serviceexample;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +43,34 @@ public class MainActivity extends AppCompatActivity{
         calc = (Button) findViewById(R.id.calc_button);
         result = (TextView) findViewById(R.id.textview_result);
         ticker = (EditText) findViewById(R.id.edit_ticker);
+
+        // Initialise Table with data already inside the database
+        TableLayout table = (TableLayout) findViewById(R.id.tableLayout);
+        String[] columnNames = new String[1];
+        columnNames[0] = "distinct stockName";
+        Cursor cursor = getContentResolver().query(HistoricalDataProvider.CONTENT_URI, columnNames, null, null, null);
+        if(cursor.moveToFirst()){
+            while(!cursor.isAfterLast()){
+                String stockName = cursor.getString(cursor.getColumnIndexOrThrow("stockName"));
+                TableRow row = new TableRow(this);
+                row.setTag(stockName);
+                TextView stock = new TextView(this);
+                stock.setText(stockName);
+                row.addView(stock);
+
+                TextView annReturn = new TextView(this);
+                annReturn.setText("NA");
+                row.addView(annReturn);
+
+                TextView volatility = new TextView(this);
+                volatility.setText("NA");
+                row.addView(volatility);
+                table.addView(row);
+
+                cursor.moveToNext();
+            }
+        }
+
 
         // Start BroadcastReceiver
         myBroadcastReceiver = new MyBroadcastReceiver(new Handler(Looper.getMainLooper()));
