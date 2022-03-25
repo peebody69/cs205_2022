@@ -11,9 +11,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -26,7 +28,6 @@ import com.example.serviceexample.*;
 public class MainActivity extends AppCompatActivity{
 
     private Button start, calc;
-    private TextView result;
     private EditText ticker;
 
 //    Uri CONTENT_URI = Uri.parse("content://com.example.serviceexample.HistoricalDataProvider/history");
@@ -41,41 +42,25 @@ public class MainActivity extends AppCompatActivity{
 
         start = (Button) findViewById(R.id.start_button);
         calc = (Button) findViewById(R.id.calc_button);
-        result = (TextView) findViewById(R.id.textview_result);
+
         ticker = (EditText) findViewById(R.id.edit_ticker);
 
+        // Start BroadcastReceiver
+        myBroadcastReceiver = new MyBroadcastReceiver(new Handler(Looper.getMainLooper()));
+
+        // start service, pass ticker info via an intent
+
         // Initialise Table with data already inside the database
-        TableLayout table = (TableLayout) findViewById(R.id.tableLayout);
         String[] columnNames = new String[1];
         columnNames[0] = "distinct stockName";
         Cursor cursor = getContentResolver().query(HistoricalDataProvider.CONTENT_URI, columnNames, null, null, null);
         if(cursor.moveToFirst()){
             while(!cursor.isAfterLast()){
                 String stockName = cursor.getString(cursor.getColumnIndexOrThrow("stockName"));
-                TableRow row = new TableRow(this);
-                row.setTag(stockName);
-                TextView stock = new TextView(this);
-                stock.setText(stockName);
-                row.addView(stock);
-
-                TextView annReturn = new TextView(this);
-                annReturn.setText("NA");
-                row.addView(annReturn);
-
-                TextView volatility = new TextView(this);
-                volatility.setText("NA");
-                row.addView(volatility);
-                table.addView(row);
-
+                ViewBuilder.CreateStockRow(this, stockName, "NA", "NA");
                 cursor.moveToNext();
             }
         }
-
-
-        // Start BroadcastReceiver
-        myBroadcastReceiver = new MyBroadcastReceiver(new Handler(Looper.getMainLooper()));
-
-        // start service, pass ticker info via an intent
 
         start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +79,6 @@ public class MainActivity extends AppCompatActivity{
         calc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                result.setText("Calculating");
                 registerReceiver(myBroadcastReceiver, new IntentFilter("PERFORMANCE_CALCULATED"));
                 Intent intent = new Intent(getApplicationContext(), PerformanceService.class);
                 startService(intent);
@@ -110,6 +94,12 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onStop() {
         super.onStop();
+
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
         unregisterReceiver(myBroadcastReceiver);
     }
 

@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -34,22 +35,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                 @Override
                 public void run() {
                     String stockName = intent.getStringExtra("stockName");
-
-                    TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);
-                    TableRow row = new TableRow(context);
-                    row.setTag(stockName);
-                    TextView stock = new TextView(context);
-                    stock.setText(stockName);
-                    row.addView(stock);
-
-                    TextView annReturn = new TextView(context);
-                    annReturn.setText("NA");
-                    row.addView(annReturn);
-
-                    TextView volatility = new TextView(context);
-                    volatility.setText("NA");
-                    row.addView(volatility);
-                    table.addView(row);
+                    ViewBuilder.CreateStockRow(context, stockName, "NA", "NA");
                 }
             });
         }
