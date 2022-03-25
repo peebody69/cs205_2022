@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 public class ViewBuilder {
     public static void CreateStockRow(Context context, String stockName, String annualReturn, String volatility){
-        Log.d("DATABASE", "View Builder built row");
         TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);
         TableRow row = new TableRow(context);
         row.setTag(stockName);

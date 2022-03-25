@@ -3,6 +3,7 @@ package com.example.serviceexample;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -53,7 +54,11 @@ public class MyService extends Service{
             String inputLine;
 
             try {
-
+                // Check if data already exists in database
+                Cursor cursor = getContentResolver().query(HistoricalDataProvider.CONTENT_URI, null, "stockName=?", new String[]{ticker}, null);
+                if(cursor.moveToFirst()){
+                    throw new StockExistsException(ticker);
+                }
                 // make GET requests
 
                 URL myUrl = new URL(stringUrl);
@@ -84,6 +89,10 @@ public class MyService extends Service{
                 e.printStackTrace();
                 result = null;
                 Thread.currentThread().interrupt();
+            } catch(Exception f){
+                f.printStackTrace();
+                Toast.makeText(MyService.this, "Stock Already Exists", Toast.LENGTH_SHORT).show();
+                return;
             }
 
             // parse the json string into 'close' and 'volume' array
@@ -155,4 +164,10 @@ public class MyService extends Service{
 
     @Override
     public void onDestroy(){ Toast.makeText(this, "download done", Toast.LENGTH_SHORT).show(); }
+}
+
+class StockExistsException extends Exception {
+    public StockExistsException(String stockName){
+        super(stockName + " already exists in database");
+    }
 }
