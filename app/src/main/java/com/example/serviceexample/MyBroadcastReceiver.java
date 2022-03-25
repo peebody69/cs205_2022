@@ -33,24 +33,22 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    Uri CONTENT_URI = Uri.parse("content://com.example.serviceexample.HistoricalDataProvider/history");
-                    TextView result = (TextView) ((Activity)context).findViewById(R.id.textview_result);
-                    String[] columnNames = new String[1];
-                    columnNames[0] = "distinct stockName";
-                    Cursor cursor = context.getContentResolver().query(CONTENT_URI, columnNames,null, null, null);
-                    List<String> stocks = new ArrayList<>();
-                    if(cursor.moveToFirst()){
-                        while(!cursor.isAfterLast()) {
+                    String stockName = intent.getStringExtra("stockName");
 
-                            stocks.add(cursor.getString(cursor.getColumnIndexOrThrow("stockName")));
-                            cursor.moveToNext();
-                        }
-                    }
+                    TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);
+                    TableRow row = new TableRow(context);
+                    TextView stock = new TextView(context);
+                    stock.setText(stockName);
+                    row.addView(stock);
 
-                    for(String stockName : stocks){
-                        handler.post(new StockRunnable(stockName, context));
-                    }
+                    TextView annReturn = new TextView(context);
+                    annReturn.setText("NA");
+                    row.addView(annReturn);
 
+                    TextView volatility = new TextView(context);
+                    volatility.setText("NA");
+                    row.addView(volatility);
+                    table.addView(row);
                 }
             });
         }
@@ -73,11 +71,11 @@ class StockRunnable implements Runnable{
         row.addView(stock);
 
         TextView annReturn = new TextView(this.context);
-        annReturn.setText(String.format("%.4f", 0.005));
+        annReturn.setText("NA");
         row.addView(annReturn);
 
         TextView volatility = new TextView(this.context);
-        volatility.setText(String.format("%.2f", 15.8));
+        volatility.setText("NA");
         row.addView(volatility);
         table.addView(row);
 

@@ -41,11 +41,17 @@ public class MainActivity extends AppCompatActivity{
         result = (TextView) findViewById(R.id.textview_result);
         ticker = (EditText) findViewById(R.id.edit_ticker);
 
+        // Start BroadcastReceiver
+        myBroadcastReceiver = new MyBroadcastReceiver(new Handler(Looper.getMainLooper()));
+
         // start service, pass ticker info via an intent
 
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                registerReceiver(myBroadcastReceiver, new IntentFilter("DOWNLOAD_COMPLETE"));
+
                 Intent intent = new Intent(getApplicationContext(), MyService.class);
                 intent.putExtra("ticker", String.valueOf(ticker.getText()));
                 startService(intent);
@@ -57,9 +63,8 @@ public class MainActivity extends AppCompatActivity{
         calc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                result.setText("Waiting for data.. ");
-                myBroadcastReceiver = new MyBroadcastReceiver(new Handler(Looper.getMainLooper()));
-                registerReceiver(myBroadcastReceiver, new IntentFilter("DOWNLOAD_COMPLETE"));
+                result.setText("Calculating");
+                registerReceiver(myBroadcastReceiver, new IntentFilter("PERFORMANCE_CALCULATED"));
             }
         });
     }
