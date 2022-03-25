@@ -120,6 +120,7 @@ public class MyService extends Service{
             // broadcast message that download is complete
 
             Intent intent = new Intent("DOWNLOAD_COMPLETE");
+            intent.putExtra("stockName", ticker);
             sendBroadcast(intent);
 
             stopSelf(msg.arg1);

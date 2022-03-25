@@ -37,6 +37,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
                     TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);
                     TableRow row = new TableRow(context);
+                    row.setTag(stockName);
                     TextView stock = new TextView(context);
                     stock.setText(stockName);
                     row.addView(stock);
@@ -52,32 +53,24 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                 }
             });
         }
+
+        if(intent.getAction().equals("PERFORMANCE_CALCULATED")){
+            String tag = intent.getStringExtra("stockName");
+            TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);
+            TableRow row = (TableRow) table.findViewWithTag(tag);
+
+            double annualReturn = intent.getDoubleExtra("annualReturn", -1);
+            double volatility = intent.getDoubleExtra("volatility", -1 );
+
+            if(row != null){
+                TextView tv0 = (TextView) row.getChildAt(1);
+                TextView tv1 = (TextView) row.getChildAt(2);
+                tv0.setText(String.format("%.4f", annualReturn));
+                tv1.setText(String.format("%.2f", volatility));
+            }
+
+
+        }
     }
 }
 
-class StockRunnable implements Runnable{
-    private String stockName;
-    private Context context;
-    public StockRunnable(String stockName, Context context){
-        this.stockName = stockName;
-        this.context = context;
-    }
-    @Override
-    public void run() {
-        TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);
-        TableRow row = new TableRow(this.context);
-        TextView stock = new TextView(this.context);
-        stock.setText(this.stockName);
-        row.addView(stock);
-
-        TextView annReturn = new TextView(this.context);
-        annReturn.setText("NA");
-        row.addView(annReturn);
-
-        TextView volatility = new TextView(this.context);
-        volatility.setText("NA");
-        row.addView(volatility);
-        table.addView(row);
-
-    }
-}

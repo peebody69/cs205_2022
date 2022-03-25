@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View view) {
                 result.setText("Calculating");
                 registerReceiver(myBroadcastReceiver, new IntentFilter("PERFORMANCE_CALCULATED"));
+                Intent intent = new Intent(getApplicationContext(), PerformanceService.class);
+                startService(intent);
             }
         });
     }
