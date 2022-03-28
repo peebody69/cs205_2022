@@ -89,8 +89,8 @@ public class MyService extends Service{
                 e.printStackTrace();
                 result = null;
                 Thread.currentThread().interrupt();
-            } catch(Exception f){
-                f.printStackTrace();
+            } catch(StockExistsException e){
+                e.printStackTrace();
                 Toast.makeText(MyService.this, "Stock Already Exists", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -103,9 +103,19 @@ public class MyService extends Service{
 
             try {
                 jsonObject = new JSONObject(result);
+                if(!(jsonObject.has("c") && jsonObject.has("v")))
+                    throw new InvalidStockException(ticker);
                 jsonArrayClose = jsonObject.getJSONArray("c");
                 jsonArrayVolume = jsonObject.getJSONArray("v");
-            } catch (JSONException e) {e.printStackTrace();}
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch(InvalidStockException e){
+                e.printStackTrace();
+                Toast.makeText(MyService.this, "Invalid ticker", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
 
             Log.v("close", String.valueOf(jsonArrayClose.length()));
@@ -169,5 +179,11 @@ public class MyService extends Service{
 class StockExistsException extends Exception {
     public StockExistsException(String stockName){
         super(stockName + " already exists in database");
+    }
+}
+
+class InvalidStockException extends Exception {
+    public InvalidStockException(String stockName){
+        super(stockName + " is invalid");
     }
 }
