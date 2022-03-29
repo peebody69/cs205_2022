@@ -12,7 +12,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 public class ViewBuilder {
-    public static void CreateStockRow(Context context, String stockName, String annualReturn, String volatility){
+    public static void CreateStockRow(Context context, String stockName, String annualizedReturn, String annualizedVolatility){
         TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);
         TableRow row = new TableRow(context);
         row.setTag(stockName);
@@ -27,27 +27,27 @@ public class ViewBuilder {
         stock.setGravity(Gravity.CENTER);
         row.addView(stock);
 
-        TextView annualReturnView = new TextView(context);
-        TableRow.LayoutParams annualReturnlp = new TableRow.LayoutParams(
+        TextView annualizedReturnView = new TextView(context);
+        TableRow.LayoutParams annualizedReturnlp = new TableRow.LayoutParams(
                 TableRow.LayoutParams.WRAP_CONTENT,
                 TableRow.LayoutParams.WRAP_CONTENT,
                 (float) 0.35
         );
-        annualReturnView.setLayoutParams(annualReturnlp);
-        annualReturnView.setText(annualReturn);
-        annualReturnView.setGravity(Gravity.CENTER);
-        row.addView(annualReturnView);
+        annualizedReturnView.setLayoutParams(annualizedReturnlp);
+        annualizedReturnView.setText(annualizedReturn);
+        annualizedReturnView.setGravity(Gravity.CENTER);
+        row.addView(annualizedReturnView);
 
-        TextView volatilityView = new TextView(context);
-        TableRow.LayoutParams volatilitylp = new TableRow.LayoutParams(
+        TextView annualizedVolatilityView = new TextView(context);
+        TableRow.LayoutParams annualizedVolatilitylp = new TableRow.LayoutParams(
                 TableRow.LayoutParams.WRAP_CONTENT,
                 TableRow.LayoutParams.WRAP_CONTENT,
                 (float) 0.35
         );
-        volatilityView.setLayoutParams(volatilitylp);
-        volatilityView.setText(volatility);
-        volatilityView.setGravity(Gravity.CENTER);
-        row.addView(volatilityView);
+        annualizedVolatilityView.setLayoutParams(annualizedVolatilitylp);
+        annualizedVolatilityView.setText(annualizedVolatility);
+        annualizedVolatilityView.setGravity(Gravity.CENTER);
+        row.addView(annualizedVolatilityView);
 
         table.addView(row);
     }

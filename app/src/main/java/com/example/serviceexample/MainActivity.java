@@ -37,12 +37,10 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
 
         // set up layout
-
         setContentView(R.layout.activitymain);
 
         start = (Button) findViewById(R.id.start_button);
         calc = (Button) findViewById(R.id.calc_button);
-
         ticker = (EditText) findViewById(R.id.edit_ticker);
 
         // Start BroadcastReceiver
@@ -51,17 +49,25 @@ public class MainActivity extends AppCompatActivity{
         // start service, pass ticker info via an intent
 
         // Initialise Table with data already inside the database
+        // Create String Array of 1 Location to place String
         String[] columnNames = new String[1];
         columnNames[0] = "distinct stockName";
+
+        /**
+         * getContentResolver() is method of class android.content.Context, to call it you need an instance of Context (e.g. Activity or Service)
+         * A Cursor is used to select the input from the system that the user operates with the mouse
+          */
         Cursor cursor = getContentResolver().query(HistoricalDataProvider.CONTENT_URI, columnNames, null, null, null);
         if(cursor.moveToFirst()){
             while(!cursor.isAfterLast()){
                 String stockName = cursor.getString(cursor.getColumnIndexOrThrow("stockName"));
+                // Invoke ViewBuilder.java
                 ViewBuilder.CreateStockRow(this, stockName, "NA", "NA");
                 cursor.moveToNext();
             }
         }
 
+        // When click on the start_button aka "Download" button
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

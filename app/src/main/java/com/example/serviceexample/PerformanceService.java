@@ -95,28 +95,53 @@ class StockRunnable implements Runnable {
         String selection = "stockName=?";
         String[] selectionArgs = new String[1];
         selectionArgs[0] = this.stockName;
+        // the query method return a Cursor object, which is positioned before the first entry
         Cursor cursor = context.getContentResolver().query(HistoricalDataProvider.CONTENT_URI, null, selection, selectionArgs, null, null);
-        double sum_price = 0.0;
-        double sum_volume = 0.0;
+        double totalReturn = 0.0;
+        double mean = 0.0;
+        double standardDeviation = 0.0;
+        int count = 0;
         if (cursor.moveToFirst()) {
-            double close = cursor.getDouble(cursor.getColumnIndexOrThrow("close"));
-            double volume = cursor.getDouble(cursor.getColumnIndexOrThrow("volume"));
-            sum_price += close * volume;
-            sum_volume += volume;
+            /**
+             * ****** DOUBLE CHECK THE COMMENTED OUT ROWS SHOULD BE REDUNDANT *********
+             */
+//            double close = cursor.getDouble(cursor.getColumnIndexOrThrow("close"));
+//            double open = cursor.getDouble(cursor.getColumnIndexOrThrow("open"));
+//            double volume = cursor.getDouble(cursor.getColumnIndexOrThrow("volume"));
+//            total_return += (close - open)/open;
+//            count++;
+//            annualizedVolatility += volume;
             while (!cursor.isAfterLast()) {
                 int id = cursor.getColumnIndex("id");
-                close = cursor.getDouble(cursor.getColumnIndexOrThrow("close"));
-                volume = cursor.getDouble(cursor.getColumnIndexOrThrow("volume"));
-                sum_price += close * volume;
-                sum_volume += volume;
+                double close = cursor.getDouble(cursor.getColumnIndexOrThrow("close"));
+                double open = cursor.getDouble(cursor.getColumnIndexOrThrow("open"));
+                double volume = cursor.getDouble(cursor.getColumnIndexOrThrow("volume"));
+                totalReturn += (close - open)/open;
+                count++;
                 cursor.moveToNext();
             }
         }
 
+        mean = totalReturn/count;
+        double annualizedReturn = (250*(totalReturn/count))*100.0;
+
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            int id = cursor.getColumnIndex("id");
+            double close = cursor.getDouble(cursor.getColumnIndexOrThrow("close"));
+            double open = cursor.getDouble(cursor.getColumnIndexOrThrow("open"));
+            double volume = cursor.getDouble(cursor.getColumnIndexOrThrow("volume"));
+            standardDeviation += Math.pow(((close - open)/open) - mean, 2);
+            cursor.moveToNext();
+        }
+
+        double sdDailyReturn = Math.sqrt(standardDeviation/count);
+        double annualizedVolatility = (Math.sqrt(250.0) * sdDailyReturn)*100.0;
         Intent intent = new Intent("PERFORMANCE_CALCULATED");
         intent.putExtra("stockName", this.stockName);
-        intent.putExtra("annualReturn", sum_price);
-        intent.putExtra("volatility", sum_volume);
+        intent.putExtra("annualizedReturn", annualizedReturn);
+        intent.putExtra("annualizedVolatility", annualizedVolatility);
         this.context.sendBroadcast(intent);
     }
 }

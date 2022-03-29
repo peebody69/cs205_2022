@@ -45,14 +45,16 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);
             TableRow row = (TableRow) table.findViewWithTag(tag);
 
-            double annualReturn = intent.getDoubleExtra("annualReturn", -1);
-            double volatility = intent.getDoubleExtra("volatility", -1 );
-
+            double annualizedReturn = intent.getDoubleExtra("annualizedReturn", -1);
+            double annualizedVolatility = intent.getDoubleExtra("annualizedVolatility", -1 );
+            /**
+             * Setting the value of the Annualized Return & Annualized Volatility
+             */
             if(row != null){
                 TextView tv0 = (TextView) row.getChildAt(1);
                 TextView tv1 = (TextView) row.getChildAt(2);
-                tv0.setText(String.format("%.4f", annualReturn));
-                tv1.setText(String.format("%.2f", volatility));
+                tv0.setText(String.format("%.2f%%", annualizedReturn));
+                tv1.setText(String.format("%.2f%%", annualizedVolatility));
             }
 
 

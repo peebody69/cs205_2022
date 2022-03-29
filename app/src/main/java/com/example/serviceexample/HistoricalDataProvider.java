@@ -26,6 +26,7 @@ public class HistoricalDataProvider extends ContentProvider {
     static final String ID = "id";
     static final String STOCKNAME = "stockName";
     static final String CLOSE = "close";
+    static final String OPEN = "open";
     static final String VOLUME = "volume";
 
     private static HashMap<String, String> HISTORY_PROJECTION_MAP;
@@ -46,12 +47,13 @@ public class HistoricalDataProvider extends ContentProvider {
     private SQLiteDatabase db;
     static final String DATABASE_NAME = "Historical_Data";
     static final String TABLE_NAME = "history";
-    static final int DATABASE_VERSION = 1;
+    static final int DATABASE_VERSION = 2;
     static final String CREATE_DB_TABLE =
             " CREATE TABLE " + TABLE_NAME +
                     " (stockName VARCHAR(30)," +
                     " id INTEGER NOT NULL, " +
                     " close DECIMAL(5,3) NOT NULL, " +
+                    " open DECIMAL(5,3) NOT NULL, " +
                     " volume DECIMAL(10,1) NOT NULL, " +
                     "PRIMARY KEY (stockName, id));";
 
