@@ -51,7 +51,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             if(row != null){
                 TextView tv0 = (TextView) row.getChildAt(1);
                 TextView tv1 = (TextView) row.getChildAt(2);
-                tv0.setText(String.format("%.4f", annualReturn));
+                tv0.setText(String.format("%.4f%%", annualReturn));
                 tv1.setText(String.format("%.2f", volatility));
             }
 
