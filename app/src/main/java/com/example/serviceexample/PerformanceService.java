@@ -102,20 +102,10 @@ class StockRunnable implements Runnable {
         double standardDeviation = 0.0;
         int count = 0;
         if (cursor.moveToFirst()) {
-            /**
-             * ****** DOUBLE CHECK THE COMMENTED OUT ROWS SHOULD BE REDUNDANT *********
-             */
-//            double close = cursor.getDouble(cursor.getColumnIndexOrThrow("close"));
-//            double open = cursor.getDouble(cursor.getColumnIndexOrThrow("open"));
-//            double volume = cursor.getDouble(cursor.getColumnIndexOrThrow("volume"));
-//            total_return += (close - open)/open;
-//            count++;
-//            annualizedVolatility += volume;
             while (!cursor.isAfterLast()) {
                 int id = cursor.getColumnIndex("id");
                 double close = cursor.getDouble(cursor.getColumnIndexOrThrow("close"));
                 double open = cursor.getDouble(cursor.getColumnIndexOrThrow("open"));
-                double volume = cursor.getDouble(cursor.getColumnIndexOrThrow("volume"));
                 totalReturn += (close - open)/open;
                 count++;
                 cursor.moveToNext();
@@ -131,7 +121,6 @@ class StockRunnable implements Runnable {
             int id = cursor.getColumnIndex("id");
             double close = cursor.getDouble(cursor.getColumnIndexOrThrow("close"));
             double open = cursor.getDouble(cursor.getColumnIndexOrThrow("open"));
-            double volume = cursor.getDouble(cursor.getColumnIndexOrThrow("volume"));
             standardDeviation += Math.pow(((close - open)/open) - mean, 2);
             cursor.moveToNext();
         }

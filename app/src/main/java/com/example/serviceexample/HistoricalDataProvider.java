@@ -27,7 +27,6 @@ public class HistoricalDataProvider extends ContentProvider {
     static final String STOCKNAME = "stockName";
     static final String CLOSE = "close";
     static final String OPEN = "open";
-    static final String VOLUME = "volume";
 
     private static HashMap<String, String> HISTORY_PROJECTION_MAP;
 
@@ -54,7 +53,6 @@ public class HistoricalDataProvider extends ContentProvider {
                     " id INTEGER NOT NULL, " +
                     " close DECIMAL(5,3) NOT NULL, " +
                     " open DECIMAL(5,3) NOT NULL, " +
-                    " volume DECIMAL(10,1) NOT NULL, " +
                     "PRIMARY KEY (stockName, id));";
 
 

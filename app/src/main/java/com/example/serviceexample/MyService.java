@@ -49,7 +49,7 @@ public class MyService extends Service{
             // url to get historical data
 
             String stringUrl = "https://finnhub.io/api/v1/stock/candle?symbol="+ticker
-                    +"&resolution=1&from=1625097601&to=1640995199&token="+token;
+                    +"&resolution=D&from=1625097601&to=1640995199&token="+token;
             String result;
             String inputLine;
 
@@ -104,12 +104,10 @@ public class MyService extends Service{
 
             try {
                 jsonObject = new JSONObject(result);
-                if(!(jsonObject.has("c") && jsonObject.has("o") && jsonObject.has("v")))
+                if(!(jsonObject.has("c") && jsonObject.has("o")))
                     throw new InvalidStockException(ticker);
                 jsonArrayClose = jsonObject.getJSONArray("c");
                 jsonArrayOpen = jsonObject.getJSONArray("o");
-                jsonArrayVolume = jsonObject.getJSONArray("v");
-
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -121,21 +119,19 @@ public class MyService extends Service{
 
 
             Log.v("close", String.valueOf(jsonArrayClose.length()));
-            Log.v("vol", String.valueOf(jsonArrayVolume.length()));
+            Log.v("open", String.valueOf(jsonArrayOpen.length()));
 
             try {
                 for (int i = 0; i < jsonArrayClose.length(); i++) {
                     double close = jsonArrayClose.getDouble(i);
                     double open = jsonArrayOpen.getDouble(i);
-                    double volume = jsonArrayVolume.getDouble(i);
-                    Log.v("data", i + ":, c: " + close + " v: " + volume);
+                    Log.v("data", i + ":, c: " + close + " o: " + open);
 
                     ContentValues values = new ContentValues();
                     values.put(HistoricalDataProvider.STOCKNAME, ticker);
                     values.put(HistoricalDataProvider.ID, i);
                     values.put(HistoricalDataProvider.CLOSE, close);
                     values.put(HistoricalDataProvider.OPEN, open);
-                    values.put(HistoricalDataProvider.VOLUME, volume);
                     getContentResolver().insert(HistoricalDataProvider.CONTENT_URI, values);
                 }
             } catch (JSONException e) {e.printStackTrace();}
