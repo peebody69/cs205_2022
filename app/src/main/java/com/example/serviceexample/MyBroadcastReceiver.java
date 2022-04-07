@@ -35,7 +35,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                 @Override
                 public void run() {
                     String stockName = intent.getStringExtra("stockName");
-                    ViewBuilder.CreateStockRow(context, stockName, "NA", "NA");
+                    ViewBuilder.CreateStockRow(context, stockName, "NA", "NA", context);
                 }
             });
         }

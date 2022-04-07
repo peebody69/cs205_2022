@@ -95,12 +95,11 @@ public class MyService extends Service{
                 return;
             }
 
-            // parse the json string into 'close' and 'volume' array
+            // parse the json string into 'close' and 'open' array
 
             JSONObject jsonObject = null;
             JSONArray jsonArrayClose = null;
             JSONArray jsonArrayOpen = null;
-            JSONArray jsonArrayVolume = null;
 
             try {
                 jsonObject = new JSONObject(result);

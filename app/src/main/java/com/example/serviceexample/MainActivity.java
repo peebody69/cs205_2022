@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity{
             while(!cursor.isAfterLast()){
                 String stockName = cursor.getString(cursor.getColumnIndexOrThrow("stockName"));
                 // Invoke ViewBuilder.java
-                ViewBuilder.CreateStockRow(this, stockName, "NA", "NA");
+                ViewBuilder.CreateStockRow(this, stockName, "NA", "NA", this);
                 cursor.moveToNext();
             }
         }
