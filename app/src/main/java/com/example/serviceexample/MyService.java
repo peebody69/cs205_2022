@@ -50,14 +50,21 @@ public class MyService extends Service{
 
             String stringUrl = "https://finnhub.io/api/v1/stock/candle?symbol="+ticker
                     +"&resolution=D&from=1625097601&to=1640995199&token="+token;
-            String result;
+            String result = null;
             String inputLine;
 
             try {
                 // Check if data already exists in database
                 Cursor cursor = getContentResolver().query(HistoricalDataProvider.CONTENT_URI, null, "stockName=?", new String[]{ticker}, null);
+                Cursor stockCount = getContentResolver().query(HistoricalDataProvider.CONTENT_URI, new String[] {"count(DISTINCT stockName) as stockCount"} ,null, null, null);
                 if(cursor.moveToFirst()){
                     throw new StockExistsException(ticker);
+                }
+                if(stockCount.moveToFirst()){
+                    int numStocks = stockCount.getInt(stockCount.getColumnIndexOrThrow("stockCount"));
+                    if(numStocks >= 5){
+                        throw new TooManyStocksException();
+                    }
                 }
                 // make GET requests
 
@@ -92,6 +99,10 @@ public class MyService extends Service{
             } catch(StockExistsException e){
                 e.printStackTrace();
                 Toast.makeText(MyService.this, "Stock Already Exists", Toast.LENGTH_SHORT).show();
+                return;
+            } catch (TooManyStocksException e){
+                e.printStackTrace();
+                Toast.makeText(MyService.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -184,5 +195,11 @@ class StockExistsException extends Exception {
 class InvalidStockException extends Exception {
     public InvalidStockException(String stockName){
         super(stockName + " is invalid");
+    }
+}
+
+class TooManyStocksException extends Exception {
+    public TooManyStocksException() {
+        super("There are already 5 stocks in the database, and you can't add more");
     }
 }
