@@ -15,10 +15,14 @@ import android.widget.TextView;
 
 public class ViewBuilder {
     public static void CreateStockRow(Context context, String stockName, String annualizedReturn, String annualizedVolatility, Context context_button){
+        // Find the table on activitymain.xml
         TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);
+
+        // Create a new row for the table
         TableRow row = new TableRow(context);
         row.setTag(stockName);
-        TextView stock = new TextView(context);
+
+        // Create a delete button to facilitate deleting stocks
         Button button = new Button(context_button);
         button.setText("Delete");
         button.setLayoutParams(new
@@ -30,6 +34,9 @@ public class ViewBuilder {
                 TableRow.LayoutParams.WRAP_CONTENT,
                 (float) 0.3
         );
+
+        // Add other columns to our row
+        TextView stock = new TextView(context);
         stock.setLayoutParams(stocklp);
         stock.setText(stockName);
         stock.setGravity(Gravity.CENTER);
