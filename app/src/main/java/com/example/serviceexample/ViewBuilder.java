@@ -2,7 +2,10 @@ package com.example.serviceexample;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 public class ViewBuilder {
     public static void CreateStockRow(Context context, String stockName, String annualizedReturn, String annualizedVolatility, Context context_button){
         TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);
@@ -23,6 +28,8 @@ public class ViewBuilder {
         Button button = new Button(context_button);
         button.setText("Delete");
         button.setTag(stockName);
+        button.getBackground().setColorFilter(ContextCompat.getColor(context, R.color.off_white), PorterDuff.Mode.MULTIPLY);
+        button.setTextColor(ContextCompat.getColor(context, R.color.design_default_color_error));
         button.setLayoutParams(new
                 TableRow.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));

@@ -175,8 +175,7 @@ public class DownloadService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-
-        Toast.makeText(this, "download starting", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Download Starting", Toast.LENGTH_SHORT).show();
         // Obtain a message instance from pool of recycled objects
         Message msg = serviceHandler.obtainMessage();
         msg.arg1 = startId;
@@ -194,7 +193,7 @@ public class DownloadService extends Service{
     }
 
     @Override
-    public void onDestroy(){ Toast.makeText(this, "download done", Toast.LENGTH_SHORT).show(); }
+    public void onDestroy(){ Toast.makeText(this, "Download Completed", Toast.LENGTH_SHORT).show(); }
 }
 
 class StockExistsException extends Exception {
