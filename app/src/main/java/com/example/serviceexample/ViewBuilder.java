@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
+import androidx.core.content.ContextCompat;
+
 public class ViewBuilder {
     public static void CreateStockRow(Context context, String stockName, String annualizedReturn, String annualizedVolatility, Context context_button){
         TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);

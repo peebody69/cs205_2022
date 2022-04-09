@@ -176,6 +176,7 @@ public class DownloadService extends Service{
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         Toast.makeText(this, "Download Starting", Toast.LENGTH_SHORT).show();
+
         // Obtain a message instance from pool of recycled objects
         Message msg = serviceHandler.obtainMessage();
         msg.arg1 = startId;

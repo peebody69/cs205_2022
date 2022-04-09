@@ -78,9 +78,11 @@ public class MainActivity extends AppCompatActivity{
                 } catch (Exception e) {
                     Log.e("input",e.getMessage());
                 }
+
                 registerReceiver(stockBroadcastReceiver, new IntentFilter("DOWNLOAD_COMPLETE"));
 
                 Intent intent = new Intent(getApplicationContext(), DownloadService.class);
+
                 intent.putExtra("ticker", String.valueOf(ticker.getText()));
                 startService(intent);
             }
