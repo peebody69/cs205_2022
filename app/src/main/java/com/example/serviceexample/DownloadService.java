@@ -46,6 +46,9 @@ public class DownloadService extends Service{
             // Obtain the name of the stock to download from the current message
             String ticker = (String) msg.obj;
 
+            // Toast indicating initiation of download for current stock
+            Toast.makeText(DownloadService.this, "Downloading in progress for: " + ticker, Toast.LENGTH_SHORT).show();
+
             // url to get historical data
 
             String stringUrl = "https://finnhub.io/api/v1/stock/candle?symbol="+ticker
@@ -146,12 +149,17 @@ public class DownloadService extends Service{
                 }
             } catch (JSONException e) {e.printStackTrace();}
 
+            // Toast indicating completion of download for current stock
+            Toast.makeText(DownloadService.this, "Downloading complete for: " + ticker, Toast.LENGTH_SHORT).show();
+
             // broadcast message that download is complete
 
             Intent intent = new Intent("DOWNLOAD_COMPLETE");
             intent.putExtra("stockName", ticker);
             sendBroadcast(intent);
 
+            // Destroys service if arg1 matches the last startId that was started by service
+            // ie. Destroy service if there are no longer any messages in queue
             stopSelf(msg.arg1);
 
         }
