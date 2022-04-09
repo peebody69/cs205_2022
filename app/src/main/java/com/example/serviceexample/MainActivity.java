@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity{
     private EditText ticker;
 
 //    Uri CONTENT_URI = Uri.parse("content://com.example.serviceexample.HistoricalDataProvider/history");
-    private BroadcastReceiver myBroadcastReceiver;
+    private BroadcastReceiver stockBroadcastReceiver;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity{
         ticker = (EditText) findViewById(R.id.edit_ticker);
 
         // Start BroadcastReceiver
-        myBroadcastReceiver = new MyBroadcastReceiver(new Handler(Looper.getMainLooper()));
+        stockBroadcastReceiver = new StockBroadcastReceiver(new Handler(Looper.getMainLooper()));
 
         // start service, pass ticker info via an intent
 
@@ -72,10 +72,10 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
 
-                // Used to route intents of type "PERFORMANCE_CALCULATED" to myBroadcastReceiver
-                registerReceiver(myBroadcastReceiver, new IntentFilter("DOWNLOAD_COMPLETE"));
+                // Used to route intents of type "PERFORMANCE_CALCULATED" to stockBroadcastReceiver
+                registerReceiver(stockBroadcastReceiver, new IntentFilter("DOWNLOAD_COMPLETE"));
 
-                Intent intent = new Intent(getApplicationContext(), MyService.class);
+                Intent intent = new Intent(getApplicationContext(), DownloadService.class);
                 intent.putExtra("ticker", String.valueOf(ticker.getText()));
                 startService(intent);
             }
@@ -86,8 +86,9 @@ public class MainActivity extends AppCompatActivity{
         calc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Used to route intents of type "PERFORMANCE_CALCULATED" to myBroadcastReceiver
-                registerReceiver(myBroadcastReceiver, new IntentFilter("PERFORMANCE_CALCULATED"));
+
+                // Used to route intents of type "PERFORMANCE_CALCULATED" to stockBroadcastReceiver
+                registerReceiver(stockBroadcastReceiver, new IntentFilter("PERFORMANCE_CALCULATED"));
                 Intent intent = new Intent(getApplicationContext(), PerformanceService.class);
                 startService(intent);
             }
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        unregisterReceiver(myBroadcastReceiver);
+        unregisterReceiver(stockBroadcastReceiver);
     }
 
 

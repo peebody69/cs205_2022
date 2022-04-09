@@ -144,8 +144,8 @@ public class HistoricalDataProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        return db.delete(TABLE_NAME, selection, selectionArgs);
     }
 
     @Override

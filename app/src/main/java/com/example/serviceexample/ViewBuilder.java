@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ViewBuilder {
     public static void CreateStockRow(Context context, String stockName, String annualizedReturn, String annualizedVolatility, Context context_button){
@@ -25,9 +26,21 @@ public class ViewBuilder {
         // Create a delete button to facilitate deleting stocks
         Button button = new Button(context_button);
         button.setText("Delete");
+        button.setTag(stockName);
         button.setLayoutParams(new
                 TableRow.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TableLayout tableLayout = (TableLayout) view.getParent().getParent();
+                TableRow tableRow = (TableRow) view.getParent();
+                tableLayout.removeView(tableRow);
+                context.getContentResolver().delete(HistoricalDataProvider.CONTENT_URI, "stockName=?", new String[] { (String) view.getTag() });
+
+                Toast.makeText(context, "Deleting stock: " + view.getTag(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         TableRow.LayoutParams stocklp = new TableRow.LayoutParams(
                 TableRow.LayoutParams.WRAP_CONTENT,
