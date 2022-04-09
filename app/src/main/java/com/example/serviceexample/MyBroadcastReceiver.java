@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
         if (intent.getAction().equals("DOWNLOAD_COMPLETE")) {
             handler.post(new Runnable() {
                 @Override

@@ -38,31 +38,42 @@ public class MyService extends Service{
     private String ticker = "MSFT";
     private String token = BuildConfig.API_KEY; // put your own token
 
-    private final class ServiceHandler extends Handler{
+    class ServiceHandler extends Handler{
+        volatile Object lock = new Object();
+        volatile boolean handlingMessage = false;
+
+        // STEP 2
         public ServiceHandler(Looper looper){
             super(looper);
         }
 
         @Override
-        public void handleMessage(Message msg){
-
+        // STEP 4
+        public synchronized void handleMessage(Message msg) {
             // url to get historical data
 
-            String stringUrl = "https://finnhub.io/api/v1/stock/candle?symbol="+ticker
-                    +"&resolution=D&from=1625097601&to=1640995199&token="+token;
-            String result;
+            String stringUrl = "https://finnhub.io/api/v1/stock/candle?symbol=" + ticker
+                    + "&resolution=D&from=1625097601&to=1640995199&token=" + token;
+            String result = null;
             String inputLine;
 
             try {
                 // Check if data already exists in database
                 Cursor cursor = getContentResolver().query(HistoricalDataProvider.CONTENT_URI, null, "stockName=?", new String[]{ticker}, null);
-                if(cursor.moveToFirst()){
+                Cursor stockCount = getContentResolver().query(HistoricalDataProvider.CONTENT_URI, new String[]{"count(DISTINCT stockName) as stockCount"}, null, null, null);
+                if (cursor.moveToFirst()) {
                     throw new StockExistsException(ticker);
+                }
+                if (stockCount.moveToFirst()) {
+                    int numStocks = stockCount.getInt(stockCount.getColumnIndexOrThrow("stockCount"));
+                    if (numStocks >= 5) {
+                        throw new TooManyStocksException();
+                    }
                 }
                 // make GET requests
 
                 URL myUrl = new URL(stringUrl);
-                HttpURLConnection connection =(HttpURLConnection) myUrl.openConnection();
+                HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
 
                 connection.setRequestMethod(REQUEST_METHOD);
                 connection.setReadTimeout(READ_TIMEOUT);
@@ -76,7 +87,7 @@ public class MyService extends Service{
                 BufferedReader reader = new BufferedReader(streamReader);
                 StringBuilder stringBuilder = new StringBuilder();
 
-                while((inputLine = reader.readLine()) != null){
+                while ((inputLine = reader.readLine()) != null) {
                     stringBuilder.append(inputLine);
                 }
 
@@ -85,13 +96,17 @@ public class MyService extends Service{
 
                 result = stringBuilder.toString();
 
-            } catch(IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
                 result = null;
                 Thread.currentThread().interrupt();
-            } catch(StockExistsException e){
+            } catch (StockExistsException e) {
                 e.printStackTrace();
                 Toast.makeText(MyService.this, "Stock Already Exists", Toast.LENGTH_SHORT).show();
+                return;
+            } catch (TooManyStocksException e) {
+                e.printStackTrace();
+                Toast.makeText(MyService.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -103,14 +118,14 @@ public class MyService extends Service{
 
             try {
                 jsonObject = new JSONObject(result);
-                if(!(jsonObject.has("c") && jsonObject.has("o")))
+                if (!(jsonObject.has("c") && jsonObject.has("o")))
                     throw new InvalidStockException(ticker);
                 jsonArrayClose = jsonObject.getJSONArray("c");
                 jsonArrayOpen = jsonObject.getJSONArray("o");
 
             } catch (JSONException e) {
                 e.printStackTrace();
-            } catch(InvalidStockException e){
+            } catch (InvalidStockException e) {
                 e.printStackTrace();
                 Toast.makeText(MyService.this, "Invalid ticker", Toast.LENGTH_SHORT).show();
                 return;
@@ -133,34 +148,45 @@ public class MyService extends Service{
                     values.put(HistoricalDataProvider.OPEN, open);
                     getContentResolver().insert(HistoricalDataProvider.CONTENT_URI, values);
                 }
-            } catch (JSONException e) {e.printStackTrace();}
-
-            // broadcast message that download is complete
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             Intent intent = new Intent("DOWNLOAD_COMPLETE");
             intent.putExtra("stockName", ticker);
             sendBroadcast(intent);
 
             stopSelf(msg.arg1);
-
         }
     }
 
     @Override
+    // STEP 1 : Once download button is clicked execute this
     public void onCreate(){
-        HandlerThread thread = new HandlerThread("Service", Process.THREAD_PRIORITY_BACKGROUND);
-        thread.start();
-        serviceLooper = thread.getLooper();
-        serviceHandler = new ServiceHandler(serviceLooper);
+        Log.v("Hello", "HELOOOOO" );
+            HandlerThread thread = new HandlerThread("Service", Process.THREAD_PRIORITY_BACKGROUND);
+            thread.start();
+            serviceLooper = thread.getLooper();
+            serviceHandler = new ServiceHandler(serviceLooper);
     }
 
     @Override
+    // STEP 3
     public int onStartCommand(Intent intent, int flags, int startId){
+        Log.v("2Hello", "2Helloooo");
         ticker = intent.getStringExtra("ticker");
         Toast.makeText(this, "download starting", Toast.LENGTH_SHORT).show();
 
         Message msg = serviceHandler.obtainMessage();
         msg.arg1 = startId;
+
+        /**
+         * Pushes a message onto the end of the message queue after all pending messages before the
+         * current time. It will be received in handleMessage, in the thread attached to this handler.
+         * Returns:
+         * Returns true if the message was successfully placed in to the message queue. Returns false
+         * on failure, usually because the looper processing the message queue is exiting.
+         */
         serviceHandler.sendMessage(msg);
 
         return START_STICKY;
@@ -184,5 +210,11 @@ class StockExistsException extends Exception {
 class InvalidStockException extends Exception {
     public InvalidStockException(String stockName){
         super(stockName + " is invalid");
+    }
+}
+
+class TooManyStocksException extends Exception {
+    public TooManyStocksException() {
+        super("There are already 5 stocks in the database, and you can't add more");
     }
 }

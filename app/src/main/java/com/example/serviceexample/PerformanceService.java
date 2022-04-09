@@ -112,6 +112,8 @@ class StockRunnable implements Runnable {
             }
         }
 
+        Log.v(stockName + " row count ", String.valueOf(count));
+
         mean = totalReturn/count;
         double annualizedReturn = (250*(totalReturn/count))*100.0;
 
