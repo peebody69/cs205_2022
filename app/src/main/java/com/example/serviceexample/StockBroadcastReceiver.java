@@ -20,11 +20,11 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyBroadcastReceiver extends BroadcastReceiver {
+public class StockBroadcastReceiver extends BroadcastReceiver {
 
     private final Handler handler;
 
-    public MyBroadcastReceiver(Handler handler) {
+    public StockBroadcastReceiver(Handler handler) {
         this.handler = handler;
     }
 
