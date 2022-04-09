@@ -30,11 +30,14 @@ public class StockBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        // On receiving a broadcast with intent action "DOWNLOAD_COMPLETE"
         if (intent.getAction().equals("DOWNLOAD_COMPLETE")) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     String stockName = intent.getStringExtra("stockName");
+
+                    // Create a row in the table with the metrics initialised to NA
                     ViewBuilder.CreateStockRow(context, stockName, "NA", "NA", context);
                 }
             });
@@ -42,9 +45,14 @@ public class StockBroadcastReceiver extends BroadcastReceiver {
 
         if(intent.getAction().equals("PERFORMANCE_CALCULATED")){
             String tag = intent.getStringExtra("stockName");
+
+            // Identifying the tablelayout on activitymain.xml
             TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);
+
+            // Identifying the row corresponding to the stock whose performance we have calculated
             TableRow row = (TableRow) table.findViewWithTag(tag);
 
+            // Retrieve the metrics broadcasted by PerformanceService.java
             double annualizedReturn = intent.getDoubleExtra("annualizedReturn", -1);
             double annualizedVolatility = intent.getDoubleExtra("annualizedVolatility", -1 );
             /**
