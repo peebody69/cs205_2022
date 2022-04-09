@@ -10,6 +10,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.MessageQueue;
 import android.os.Process;
 import android.util.Log;
 import android.widget.Toast;
@@ -35,8 +36,10 @@ public class MyService extends Service{
     private static final int READ_TIMEOUT = 15000;
     private static final int CONNECTION_TIMEOUT = 15000;
 
-    private String ticker = "MSFT";
     private String token = BuildConfig.API_KEY; // put your own token
+
+    private MessageQueue messageQueue = null;
+
 
     private final class ServiceHandler extends Handler{
         public ServiceHandler(Looper looper){
@@ -45,6 +48,9 @@ public class MyService extends Service{
 
         @Override
         public void handleMessage(Message msg){
+
+            // Obtain the name of the stock to download from the current message
+            String ticker = (String) msg.obj;
 
             // url to get historical data
 
@@ -128,8 +134,8 @@ public class MyService extends Service{
             }
 
 
-            Log.v("close", String.valueOf(jsonArrayClose.length()));
-            Log.v("open", String.valueOf(jsonArrayOpen.length()));
+//            Log.v("close", String.valueOf(jsonArrayClose.length()));
+//            Log.v("open", String.valueOf(jsonArrayOpen.length()));
 
             try {
                 for (int i = 0; i < jsonArrayClose.length(); i++) {
@@ -167,11 +173,14 @@ public class MyService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        ticker = intent.getStringExtra("ticker");
-        Toast.makeText(this, "download starting", Toast.LENGTH_SHORT).show();
 
+        Toast.makeText(this, "download starting", Toast.LENGTH_SHORT).show();
+        // Obtain a message instance from pool of recycled objects
         Message msg = serviceHandler.obtainMessage();
         msg.arg1 = startId;
+        msg.obj = intent.getStringExtra("ticker");
+
+        // Queue a new message
         serviceHandler.sendMessage(msg);
 
         return START_STICKY;
