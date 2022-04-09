@@ -46,6 +46,8 @@ public class PerformanceService extends Service {
             if(cursor.moveToFirst()){
                 while(!cursor.isAfterLast()) {
                     String stockName = cursor.getString(cursor.getColumnIndexOrThrow("stockName"));
+
+                    // Create a new thread that calculates the performance for each stock
                     this.post(new StockRunnable(PerformanceService.this, stockName));
                     cursor.moveToNext();
                 }
@@ -92,6 +94,8 @@ class StockRunnable implements Runnable {
     }
     @Override
     public void run() {
+        // Select all entries in a database for a specified stockname
+
         String selection = "stockName=?";
         String[] selectionArgs = new String[1];
         selectionArgs[0] = this.stockName;
@@ -101,6 +105,8 @@ class StockRunnable implements Runnable {
         double mean = 0.0;
         double standardDeviation = 0.0;
         int count = 0;
+
+        // Iterate through every row belonging to this stock
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 int id = cursor.getColumnIndex("id");
@@ -115,8 +121,10 @@ class StockRunnable implements Runnable {
         mean = totalReturn/count;
         double annualizedReturn = (250*(totalReturn/count))*100.0;
 
+        // Reset the cursor to start
         cursor.moveToFirst();
 
+        // Iterate through every row in the cursor
         while (!cursor.isAfterLast()) {
             int id = cursor.getColumnIndex("id");
             double close = cursor.getDouble(cursor.getColumnIndexOrThrow("close"));
@@ -125,6 +133,8 @@ class StockRunnable implements Runnable {
             cursor.moveToNext();
         }
 
+
+        // Broadcast information about the stock to be received by StockBroadcastReceiver
         double sdDailyReturn = Math.sqrt(standardDeviation/count);
         double annualizedVolatility = (Math.sqrt(250.0) * sdDailyReturn)*100.0;
         Intent intent = new Intent("PERFORMANCE_CALCULATED");

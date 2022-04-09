@@ -134,6 +134,7 @@ public class DownloadService extends Service{
 //            Log.v("close", String.valueOf(jsonArrayClose.length()));
 //            Log.v("open", String.valueOf(jsonArrayOpen.length()));
 
+            // Insert rows into database
             try {
                 for (int i = 0; i < jsonArrayClose.length(); i++) {
                     double close = jsonArrayClose.getDouble(i);
@@ -147,7 +148,14 @@ public class DownloadService extends Service{
                     values.put(HistoricalDataProvider.OPEN, open);
                     getContentResolver().insert(HistoricalDataProvider.CONTENT_URI, values);
                 }
-            } catch (JSONException e) {e.printStackTrace();}
+            }
+            catch (JSONException e)
+            {e.printStackTrace();}
+            catch (NullPointerException e){
+                // In the case of an invalid API Key, jsonArray will be null
+                e.printStackTrace();
+                Toast.makeText(DownloadService.this, "Invalid API Key", Toast.LENGTH_SHORT).show();
+            }
 
             // Toast indicating completion of download for current stock
             Toast.makeText(DownloadService.this, "Downloading complete for: " + ticker, Toast.LENGTH_SHORT).show();

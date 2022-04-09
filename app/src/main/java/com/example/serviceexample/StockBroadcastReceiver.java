@@ -36,6 +36,8 @@ public class StockBroadcastReceiver extends BroadcastReceiver {
                 @Override
                 public void run() {
                     String stockName = intent.getStringExtra("stockName");
+
+                    // Create a row in the table with the metrics initialised to NA
                     ViewBuilder.CreateStockRow(context, stockName, "NA", "NA", context);
                 }
             });
@@ -50,6 +52,7 @@ public class StockBroadcastReceiver extends BroadcastReceiver {
             // Identifying the row corresponding to the stock whose performance we have calculated
             TableRow row = (TableRow) table.findViewWithTag(tag);
 
+            // Retrieve the metrics broadcasted by PerformanceService.java
             double annualizedReturn = intent.getDoubleExtra("annualizedReturn", -1);
             double annualizedVolatility = intent.getDoubleExtra("annualizedVolatility", -1 );
             /**
