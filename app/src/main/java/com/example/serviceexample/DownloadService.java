@@ -10,6 +10,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.MessageQueue;
 import android.os.Process;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,16 +19,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-public class MyService extends Service{
+public class DownloadService extends Service{
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
 
@@ -35,7 +34,6 @@ public class MyService extends Service{
     private static final int READ_TIMEOUT = 15000;
     private static final int CONNECTION_TIMEOUT = 15000;
 
-    private String ticker = "MSFT";
     private String token = BuildConfig.API_KEY; // put your own token
 
     private final class ServiceHandler extends Handler{
@@ -45,6 +43,11 @@ public class MyService extends Service{
 
         @Override
         public void handleMessage(Message msg){
+            // Obtain the name of the stock to download from the current message
+            String ticker = (String) msg.obj;
+
+            // Toast indicating initiation of download for current stock
+            Toast.makeText(DownloadService.this, "Downloading in progress for: " + ticker, Toast.LENGTH_SHORT).show();
 
             // url to get historical data
 
@@ -98,11 +101,11 @@ public class MyService extends Service{
                 Thread.currentThread().interrupt();
             } catch(StockExistsException e){
                 e.printStackTrace();
-                Toast.makeText(MyService.this, "Stock Already Exists", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DownloadService.this, "Stock Already Exists", Toast.LENGTH_SHORT).show();
                 return;
             } catch (TooManyStocksException e){
                 e.printStackTrace();
-                Toast.makeText(MyService.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(DownloadService.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -123,13 +126,13 @@ public class MyService extends Service{
                 e.printStackTrace();
             } catch(InvalidStockException e){
                 e.printStackTrace();
-                Toast.makeText(MyService.this, "Invalid ticker", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DownloadService.this, "Invalid ticker", Toast.LENGTH_SHORT).show();
                 return;
             }
 
 
-            Log.v("close", String.valueOf(jsonArrayClose.length()));
-            Log.v("open", String.valueOf(jsonArrayOpen.length()));
+//            Log.v("close", String.valueOf(jsonArrayClose.length()));
+//            Log.v("open", String.valueOf(jsonArrayOpen.length()));
 
             try {
                 for (int i = 0; i < jsonArrayClose.length(); i++) {
@@ -146,12 +149,17 @@ public class MyService extends Service{
                 }
             } catch (JSONException e) {e.printStackTrace();}
 
+            // Toast indicating completion of download for current stock
+            Toast.makeText(DownloadService.this, "Downloading complete for: " + ticker, Toast.LENGTH_SHORT).show();
+
             // broadcast message that download is complete
 
             Intent intent = new Intent("DOWNLOAD_COMPLETE");
             intent.putExtra("stockName", ticker);
             sendBroadcast(intent);
 
+            // Destroys service if arg1 matches the last startId that was started by service
+            // ie. Destroy service if there are no longer any messages in queue
             stopSelf(msg.arg1);
 
         }
@@ -167,11 +175,14 @@ public class MyService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        ticker = intent.getStringExtra("ticker");
-        Toast.makeText(this, "download starting", Toast.LENGTH_SHORT).show();
 
+        Toast.makeText(this, "download starting", Toast.LENGTH_SHORT).show();
+        // Obtain a message instance from pool of recycled objects
         Message msg = serviceHandler.obtainMessage();
         msg.arg1 = startId;
+        msg.obj = intent.getStringExtra("ticker");
+
+        // Queue a new message
         serviceHandler.sendMessage(msg);
 
         return START_STICKY;
