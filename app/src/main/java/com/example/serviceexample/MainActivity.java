@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity{
 
                 registerReceiver(myBroadcastReceiver, new IntentFilter("DOWNLOAD_COMPLETE"));
 
-                Intent intent = new Intent(getApplicationContext(), MyService.class);
+                Intent intent = new Intent(getApplicationContext(), DownloadService.class);
                 intent.putExtra("ticker", String.valueOf(ticker.getText()));
                 startService(intent);
             }

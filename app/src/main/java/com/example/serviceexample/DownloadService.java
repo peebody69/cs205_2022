@@ -19,16 +19,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-public class MyService extends Service{
+public class DownloadService extends Service{
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
 
@@ -38,9 +36,6 @@ public class MyService extends Service{
 
     private String token = BuildConfig.API_KEY; // put your own token
 
-    private MessageQueue messageQueue = null;
-
-
     private final class ServiceHandler extends Handler{
         public ServiceHandler(Looper looper){
             super(looper);
@@ -48,7 +43,6 @@ public class MyService extends Service{
 
         @Override
         public void handleMessage(Message msg){
-
             // Obtain the name of the stock to download from the current message
             String ticker = (String) msg.obj;
 
@@ -104,11 +98,11 @@ public class MyService extends Service{
                 Thread.currentThread().interrupt();
             } catch(StockExistsException e){
                 e.printStackTrace();
-                Toast.makeText(MyService.this, "Stock Already Exists", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DownloadService.this, "Stock Already Exists", Toast.LENGTH_SHORT).show();
                 return;
             } catch (TooManyStocksException e){
                 e.printStackTrace();
-                Toast.makeText(MyService.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(DownloadService.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -129,7 +123,7 @@ public class MyService extends Service{
                 e.printStackTrace();
             } catch(InvalidStockException e){
                 e.printStackTrace();
-                Toast.makeText(MyService.this, "Invalid ticker", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DownloadService.this, "Invalid ticker", Toast.LENGTH_SHORT).show();
                 return;
             }
 
