@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity{
 
         /**
          * getContentResolver() is method of class android.content.Context, to call it you need an instance of Context (e.g. Activity or Service)
-         * A Cursor is used to select the input from the system that the user operates with the mouse
+         * A Cursor is used to provide read access to the result set from our database query
           */
         Cursor cursor = getContentResolver().query(HistoricalDataProvider.CONTENT_URI, columnNames, null, null, null);
         if(cursor.moveToFirst()){
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
 
+                // Used to route intents of type "PERFORMANCE_CALCULATED" to myBroadcastReceiver
                 registerReceiver(myBroadcastReceiver, new IntentFilter("DOWNLOAD_COMPLETE"));
 
                 Intent intent = new Intent(getApplicationContext(), MyService.class);
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity{
         calc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Used to route intents of type "PERFORMANCE_CALCULATED" to myBroadcastReceiver
                 registerReceiver(myBroadcastReceiver, new IntentFilter("PERFORMANCE_CALCULATED"));
                 Intent intent = new Intent(getApplicationContext(), PerformanceService.class);
                 startService(intent);

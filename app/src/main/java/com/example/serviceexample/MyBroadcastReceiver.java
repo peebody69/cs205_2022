@@ -30,6 +30,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        // On receiving a broadcast with intent action "DOWNLOAD_COMPLETE"
         if (intent.getAction().equals("DOWNLOAD_COMPLETE")) {
             handler.post(new Runnable() {
                 @Override
@@ -42,7 +43,11 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
 
         if(intent.getAction().equals("PERFORMANCE_CALCULATED")){
             String tag = intent.getStringExtra("stockName");
+
+            // Identifying the tablelayout on activitymain.xml
             TableLayout table = (TableLayout) ((Activity)context).findViewById(R.id.tableLayout);
+
+            // Identifying the row corresponding to the stock whose performance we have calculated
             TableRow row = (TableRow) table.findViewWithTag(tag);
 
             double annualizedReturn = intent.getDoubleExtra("annualizedReturn", -1);
